@@ -18,8 +18,8 @@ data_val = MNIST("./data/mnist",
                      transforms.ToTensor()]))
 
 dataloader_train = DataLoader(
-    data_train, batch_size=1000, shuffle=True, num_workers=8)
-dataloader_val = DataLoader(data_val, batch_size=1000, num_workers=8)
+    data_train, batch_size=1000, shuffle=True, num_workers=0)
+dataloader_val = DataLoader(data_val, batch_size=1000, num_workers=0)
 
 dataloaders = {
     "train": dataloader_train,
