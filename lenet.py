@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from collections import OrderedDict
 
-
+##Lenet is used as it gives sufficiently good results on MNIST
 class LeNet(nn.Module):
     def __init__(self, dropout=False):
         super().__init__()
