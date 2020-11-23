@@ -10,7 +10,7 @@ from losses import relu_evidence
 from helpers import rotate_img, one_hot_embedding, get_device
 
 
-def test_single_image(model, img, uncertainty=False, device=None):
+def test_single_image(model, img, label_list, uncertainty=False, device=None):
     if not device:
         device = get_device()
     num_classes = 10
@@ -32,7 +32,8 @@ def test_single_image(model, img, uncertainty=False, device=None):
         output = output.flatten()
         prob = prob.flatten()
         preds = preds.flatten()
-        print("Predict:", preds[0])
+        label = list(label_list.keys())[list(label_list.values()).index(preds[0])]
+        print("Predict:", label)
         print("Probs:", prob)
         print("Uncertainty:", uncertainty)
 
@@ -44,33 +45,34 @@ def test_single_image(model, img, uncertainty=False, device=None):
         output = output.flatten()
         prob = prob.flatten()
         preds = preds.flatten()
-        print("Predict:", preds[0])
+        label = list(label_list.keys())[list(label_list.values()).index(preds[0])]
+        print("Predict:", label)
         print("Probs:", prob)
 
-    labels = np.arange(10)
+    labels = label_list.keys()
     fig = plt.figure(figsize=[6.2, 5])
     fig, axs = plt.subplots(1, 2, gridspec_kw={"width_ratios": [1,  3]})
 
-    plt.title("Classified as: {}, Uncertainty: {}".format(
-        preds[0], uncertainty.item()))
+    plt.title("Classified as: {}".format(
+        label))
 
-    axs[0].set_title("One")
     axs[0].imshow(img, cmap="gray")
     axs[0].axis("off")
 
     axs[1].bar(labels, prob.cpu().detach().numpy(), width=0.5)
     axs[1].set_xlim([0, 9])
     axs[1].set_ylim([0, 1])
-    axs[1].set_xticks(np.arange(10))
+    # axs[1].set_xticks(np.arange(10))
     axs[1].set_xlabel("Classes")
     axs[1].set_ylabel("Classification Probability")
 
     fig.tight_layout()
 
-    plt.savefig("./results/one.jpg")
+    plt.savefig("./results/test_image.jpg")
 
 
-def rotating_image_classification(model, img, filename, uncertainty=False, threshold=0.5, device=None):
+def rotating_image_classification(model, img, filename, label_list, uncertainty=False, threshold=0.5, device=None):
+    print(label_list)
     if not device:
         device = get_device()
     num_classes = 10
@@ -121,7 +123,7 @@ def rotating_image_classification(model, img, filename, uncertainty=False, thres
         scores += prob.detach().cpu().numpy() >= threshold
         ldeg.append(deg)
         lp.append(prob.tolist())
-
+    
     labels = np.arange(10)[scores[0].astype(bool)]
     lp = np.array(lp)[:, labels]
     c = ["black", "blue", "red", "brown", "purple", "cyan"]
@@ -139,7 +141,7 @@ def rotating_image_classification(model, img, filename, uncertainty=False, thres
 
     print(classifications)
 
-    axs[0].set_title("Rotated \"1\" Digit Classifications")
+    axs[0].set_title("Rotated Image Classifications")
     axs[0].imshow(1 - rimgs, cmap="gray")
     axs[0].axis("off")
     plt.pause(0.001)
